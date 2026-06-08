@@ -1,0 +1,110 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "hvac-control"
+version = "1.0.0"
+description = "Physics-based multi-zone HVAC simulation and intelligent control framework"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "HVAC Control Project", email = "hvac-control@example.com"},
+]
+keywords = ["HVAC", "simulation", "control", "MPC", "PID", "building-energy", "thermal-modeling"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.10"
+
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "pandas>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "pytest-benchmark>=4.0",
+    "ruff>=0.1",
+    "mypy>=1.5",
+    "ipykernel",
+    "jupyter",
+    "matplotlib>=3.7",
+    "plotly>=5.15",
+    "streamlit>=1.25",
+]
+osqp = [
+    "osqp>=0.6",
+]
+full = [
+    "hvac-control[dev,osqp]",
+    "streamlit>=1.25",
+    "plotly>=5.15",
+]
+
+[project.scripts]
+hvac-sim   = "hvac_sim.run:main"
+hvac-dash  = "dashboard.app:main"
+
+[project.urls]
+Homepage    = "https://github.com/your-org/hvac-control"
+Repository  = "https://github.com/your-org/hvac-control"
+Issues      = "https://github.com/your-org/hvac-control/issues"
+Docs        = "https://your-org.github.io/hvac-control"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# ──────────────────────────────────────────────────────────────────
+# Ruff (linter + formatter)
+# ──────────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 99
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
+ignore = ["E501", "B008"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+# ──────────────────────────────────────────────────────────────────
+# pytest
+# ──────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts   = "-v --tb=short"
+python_files = "test_*.py"
+
+# ──────────────────────────────────────────────────────────────────
+# Coverage
+# ──────────────────────────────────────────────────────────────────
+[tool.coverage.run]
+source = ["src"]
+omit   = ["tests/*", "*/__init__.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+fail_under   = 80
+
+# ──────────────────────────────────────────────────────────────────
+# mypy
+# ──────────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version      = "3.11"
+warn_return_any     = true
+warn_unused_configs = true
+ignore_missing_imports = true

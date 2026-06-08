@@ -1,0 +1,78 @@
+name: Nightly Simulation — 72h Building Analysis
+
+on:
+  schedule:
+    - cron: "0 2 * * *"    # 2 AM UTC daily
+  workflow_dispatch:
+    inputs:
+      duration_hours:
+        description: Simulation duration (hours)
+        required: false
+        default: "72"
+      location:
+        description: Weather profile location preset
+        required: false
+        default: "temperate"
+
+jobs:
+  full-simulation:
+    name: Run Full 72h Simulation with All Controllers
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Rule-Based Controller simulation
+        run: |
+          python -m src.simulation.building_model \
+            --controller rule_based \
+            --duration ${{ github.event.inputs.duration_hours || 72 }} \
+            --output data/results_rule_based.json
+
+      - name: Run PID Controller simulation
+        run: |
+          python -m src.simulation.building_model \
+            --controller pid \
+            --duration ${{ github.event.inputs.duration_hours || 72 }} \
+            --output data/results_pid.json
+
+      - name: Run Predictive Controller simulation
+        run: |
+          python -m src.simulation.building_model \
+            --controller predictive \
+            --duration ${{ github.event.inputs.duration_hours || 72 }} \
+            --output data/results_predictive.json
+
+      - name: Run Energy Comparison Analysis
+        run: |
+          python -m src.analytics.energy_comparison \
+            --fan-results data/results_predictive.json \
+            --output data/energy_report.json
+
+      - name: Generate simulation plots
+        run: |
+          python scripts/plot_results.py \
+            --results data/results_rule_based.json data/results_pid.json data/results_predictive.json \
+            --output reports/
+
+      - name: Upload simulation reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulation-report-${{ github.run_number }}
+          path: |
+            data/
+            reports/
+          retention-days: 30
+
+      - name: Post summary
+        run: |
+          python scripts/summarize_results.py --output $GITHUB_STEP_SUMMARY
