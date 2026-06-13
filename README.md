@@ -1,10 +1,5 @@
 # Modern HVAC Control System — Multi-Zone Intelligent Controller
 
-[![CI/CD](https://github.com/your-org/hvac-control/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/hvac-control/actions)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Coverage](https://img.shields.io/badge/coverage-92%25-brightgreen)](tests/)
-
  *A physics-based, multi-zone HVAC simulation and intelligent control framework** — modeling thermal dynamics, humidity, air quality (CO₂/VOC), and pressure with cascaded PID + Model Predictive Control (MPC) and occupancy-driven optimization.
 
 ## Motivation
